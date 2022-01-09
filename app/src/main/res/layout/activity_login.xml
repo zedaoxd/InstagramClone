@@ -12,7 +12,7 @@
         android:layout_width="200dp"
         android:layout_height="60dp"
         android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/filedEmail"
+        app:layout_constraintBottom_toTopOf="@+id/fieldEmail"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -20,7 +20,7 @@
         app:srcCompat="@drawable/logo" />
 
     <EditText
-        android:id="@+id/filedEmail"
+        android:id="@+id/fieldEmail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -32,13 +32,13 @@
         android:padding="8dp"
         android:textColor="@color/white"
         android:textColorHint="@color/white"
-        app:layout_constraintBottom_toTopOf="@+id/filedPassword"
+        app:layout_constraintBottom_toTopOf="@+id/fieldPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <EditText
-        android:id="@+id/filedPassword"
+        android:id="@+id/fieldPassword"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -51,13 +51,13 @@
         android:padding="8dp"
         android:textColor="@color/white"
         android:textColorHint="@color/white"
-        app:layout_constraintBottom_toTopOf="@+id/buttonLogin"
+        app:layout_constraintBottom_toTopOf="@+id/buttonRegister"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/filedEmail" />
+        app:layout_constraintTop_toBottomOf="@+id/fieldEmail" />
 
     <Button
-        android:id="@+id/buttonLogin"
+        android:id="@+id/buttonRegister"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -69,7 +69,7 @@
         app:layout_constraintBottom_toTopOf="@+id/textRegister"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/filedPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/fieldPassword" />
 
     <TextView
         android:id="@+id/textRegister"
@@ -83,7 +83,7 @@
         app:layout_constraintBottom_toTopOf="@+id/progressRegister"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonLogin" />
+        app:layout_constraintTop_toBottomOf="@+id/buttonRegister" />
 
     <ProgressBar
         android:id="@+id/progressRegister"
