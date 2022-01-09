@@ -11,13 +11,15 @@
         android:theme="@style/Theme.InstagramClone">
         <activity
             android:name=".activity.RegisterActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.InstagramCloneLogin"/>
         <activity
             android:name=".activity.MainActivity"
             android:exported="false" />
         <activity
             android:name=".activity.LoginActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.InstagramCloneLogin">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

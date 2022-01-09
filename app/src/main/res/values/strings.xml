@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">InstagramClone</string>
+    <string name="app_name">Instagram</string>
 
     <!-- My Strings -->
     <string name="enter_email">Digite seu e-mail</string>
@@ -11,4 +11,6 @@
     <string name="text_button_register">Cadastrar</string>
 
     <string name="some_empty_fields">Existem um ou mais campos vazios</string>
+
+    <string name="menu_sair">Sair</string>
 </resources>

@@ -9,8 +9,9 @@
     <color name="white">#FFFFFFFF</color>
 
     <!-- Minhas cores -->
-    <color name="colorPrimary">#D32020</color>
-    <color name="colorPrimaryDark">#462759</color>
+    <color name="colorPrimary">#8D3AE1</color>
+    <color name="colorPrimaryDark">#000</color>
+    <color name="purple">#462759</color>
 
     <color name="startColorGradientLogin">#c53766</color>
     <color name="endColorGradientLogin">#8149aa</color>
