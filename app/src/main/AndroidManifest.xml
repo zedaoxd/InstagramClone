@@ -10,7 +10,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.InstagramClone">
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.RegisterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
