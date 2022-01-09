@@ -10,8 +10,8 @@ import android.view.View;
 import com.example.instagramclone.R;
 import com.example.instagramclone.databinding.ActivityRegisterBinding;
 import com.example.instagramclone.model.User;
-import com.example.instagramclone.util.AlertUtil;
-import com.example.instagramclone.util.ContsStringUtils;
+import com.example.instagramclone.util.Utils;
+import com.example.instagramclone.util.StringUtils;
 import com.example.instagramclone.util.FirebaseUtils;
 import com.example.instagramclone.util.UserFirebase;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -34,6 +34,7 @@ public class RegisterActivity extends AppCompatActivity {
         binding = ActivityRegisterBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        binding.fieldName.requestFocus();
         binding.progressRegister.setVisibility(View.GONE);
         clickButtonRegister();
     }
@@ -46,8 +47,8 @@ public class RegisterActivity extends AppCompatActivity {
                 String email = binding.fieldEmail.getText().toString();
                 String password = binding.fieldPassword.getText().toString();
 
-                if (someEmptyFields(name, email, password)){
-                    AlertUtil.toastMessage(getApplicationContext(), ContsStringUtils.emptyFields);
+                if (Utils.someEmptyFields(name, email, password)){
+                    Utils.toastMessage(getApplicationContext(), StringUtils.emptyFields);
                 } else {
                     binding.progressRegister.setVisibility(View.VISIBLE);
                     User user = new User();
@@ -72,7 +73,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                             user.save();
                             UserFirebase.updateUserName(user.getName());
-                            AlertUtil.toastMessage(getApplicationContext(), ContsStringUtils.registeredSuccessfully);
+                            Utils.toastMessage(getApplicationContext(), StringUtils.registeredSuccessfully);
                             Intent i = new Intent(RegisterActivity.this, MainActivity.class);
                             startActivity(i);
                             finish();
@@ -83,27 +84,18 @@ public class RegisterActivity extends AppCompatActivity {
                             try {
                                 throw task.getException();
                             } catch (FirebaseAuthWeakPasswordException e){
-                                exception = ContsStringUtils.weakPassword;
+                                exception = StringUtils.weakPassword;
                             } catch (FirebaseAuthInvalidCredentialsException e) {
-                                exception = ContsStringUtils.invalidEmail;
+                                exception = StringUtils.invalidEmail;
                             } catch (FirebaseAuthUserCollisionException e){
-                                exception = ContsStringUtils.emailRegistered;
+                                exception = StringUtils.emailRegistered;
                             } catch (Exception e){
-                                exception = ContsStringUtils.errorToRegister;
+                                exception = StringUtils.errorToRegister;
                             }
-                            AlertUtil.toastMessage(getApplicationContext(), exception);
+                            Utils.toastMessage(getApplicationContext(), exception);
 
                         }
                     }
                 });
-    }
-
-    private boolean someEmptyFields(String... fields){
-        for (String field : fields ){
-            if (field.isEmpty()){
-                return true;
-            }
-        }
-        return false;
     }
 }

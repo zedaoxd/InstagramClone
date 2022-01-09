@@ -1,7 +1,7 @@
 package com.example.instagramclone.model;
 
 import com.example.instagramclone.util.Base64Utils;
-import com.example.instagramclone.util.ContsStringUtils;
+import com.example.instagramclone.util.StringUtils;
 import com.example.instagramclone.util.FirebaseUtils;
 import com.google.firebase.database.DatabaseReference;
 
@@ -24,7 +24,7 @@ public class User implements Serializable {
             this.setId(userIdentifier);
             DatabaseReference reference = FirebaseUtils.getDatabaseReference();
             DatabaseReference users = reference
-                    .child(ContsStringUtils.users)
+                    .child(StringUtils.users)
                     .child(userIdentifier);
             users.setValue(this);
 
