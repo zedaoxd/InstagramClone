@@ -13,4 +13,12 @@
     <string name="some_empty_fields">Existem um ou mais campos vazios</string>
 
     <string name="menu_sair">Sair</string>
+
+    <!-- Names icons Bottom Navigation -->
+    <string name="menu_perfil">Perfil</string>
+    <string name="menu_add_post">Postagem</string>
+    <string name="menu_search">Pesquisar</string>
+    <string name="menu_home">Home</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
