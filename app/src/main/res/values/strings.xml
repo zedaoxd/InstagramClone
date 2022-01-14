@@ -22,4 +22,9 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="text_button_edit_perfil">Editar perfil</string>
+    <string name="text_publications">Publicações</string>
+    <string name="text_followers">Seguidores</string>
+    <string name="text_following">Seguindo</string>
+    <string name="alter_photo">Alterar foto</string>
+    <string name="save_alter">Salvar Alterações</string>
 </resources>

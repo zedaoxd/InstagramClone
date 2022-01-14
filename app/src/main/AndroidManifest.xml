@@ -10,9 +10,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.InstagramClone">
         <activity
+            android:name=".activity.EditPerfilActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.MainActivity"/>
+        <activity
             android:name=".activity.RegisterActivity"
             android:exported="false"
-            android:theme="@style/Theme.InstagramCloneLogin"/>
+            android:theme="@style/Theme.InstagramCloneLogin" />
         <activity
             android:name=".activity.MainActivity"
             android:exported="false" />

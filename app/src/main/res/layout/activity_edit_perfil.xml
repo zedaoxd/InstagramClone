@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.EditPerfilActivity">
+
+    <include
+        android:id="@+id/include"
+        layout="@layout/toolbar"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imagePerfilEdit"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:src="@drawable/avatar" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/alter_photo"
+            android:textAlignment="center"
+            android:textColor="@android:color/holo_blue_dark"
+            android:textStyle="bold" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:drawableStart="@drawable/ic_person"
+                android:hint="@string/enter_name"
+                app:drawableTint="@android:color/darker_gray" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:drawableStart="@drawable/ic_email"
+                android:hint="@string/enter_email"
+                app:drawableTint="@android:color/darker_gray" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/save_alter" />
+
+    </LinearLayout>
+
+</LinearLayout>

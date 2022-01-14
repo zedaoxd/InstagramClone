@@ -9,8 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.instagramclone.R;
+import com.example.instagramclone.databinding.FragmentPerfilBinding;
 
 public class FeedFragment extends Fragment {
+
 
     public FeedFragment() {
         // Required empty public constructor
