@@ -7,6 +7,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class User implements Serializable {
     private String id;
@@ -22,6 +24,24 @@ public class User implements Serializable {
         DatabaseReference databaseReference = FirebaseUtils.getDatabaseReference();
         DatabaseReference userRef = databaseReference.child("users").child(this.id);
         userRef.setValue(this);
+    }
+
+    public void update(){
+        DatabaseReference databaseReference = FirebaseUtils.getDatabaseReference();
+        DatabaseReference userRef = databaseReference.child("users").child(this.id);
+
+        userRef.updateChildren(convertToMap());
+    }
+
+    private Map<String, Object> convertToMap(){
+
+        HashMap<String, Object> userMap = new HashMap<>();
+        userMap.put("email", this.email);
+        userMap.put("name", this.name);
+        userMap.put("id", this.id);
+        userMap.put("pathPhoto", this.photoPath);
+
+        return userMap;
     }
 
     public String getPhotoPath() {
