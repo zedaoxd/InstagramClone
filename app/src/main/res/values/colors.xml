@@ -19,6 +19,8 @@
     <color name="mid_gray">#dbdbdb</color>
 
     <color name="background_22transparent">#22FFFFFF</color>
-    <color name="background_00transparent">#22FFFFFF</color>
+    <color name="background_00transparent">#00FFFFFF</color>
     <color name="border_button_login">#c9dbe9</color>
+
+    <color name="border_button_edit_perfil">#c9dbe9</color>
 </resources>
