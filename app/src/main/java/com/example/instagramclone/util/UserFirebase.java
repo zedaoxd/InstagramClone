@@ -19,8 +19,10 @@ public class UserFirebase implements Serializable {
         return user.getCurrentUser();
     }
 
-    public static boolean updateUserName(String name){
+    public static void updateUserName(String name){
+
         try {
+
             FirebaseUser user = getCurrentUserFirebase();
             UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest.Builder()
                     .setDisplayName(name)
@@ -33,9 +35,9 @@ public class UserFirebase implements Serializable {
                     }
                 }
             });
-            return true;
+
         } catch (Exception e){
-            return false;
+            e.printStackTrace();
         }
     }
 }

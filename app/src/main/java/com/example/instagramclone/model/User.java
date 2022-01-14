@@ -4,6 +4,7 @@ import com.example.instagramclone.util.Base64Utils;
 import com.example.instagramclone.util.StringUtils;
 import com.example.instagramclone.util.FirebaseUtils;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Exclude;
 
 import java.io.Serializable;
 
@@ -18,21 +19,9 @@ public class User implements Serializable {
     }
 
     public void save(){
-        try {
-
-            String userIdentifier = Base64Utils.encode(this.getEmail());
-            this.setId(userIdentifier);
-            DatabaseReference reference = FirebaseUtils.getDatabaseReference();
-            DatabaseReference users = reference
-                    .child(StringUtils.users)
-                    .child(userIdentifier);
-            users.setValue(this);
-
-        } catch (Exception e){
-
-            e.printStackTrace();
-
-        }
+        DatabaseReference databaseReference = FirebaseUtils.getDatabaseReference();
+        DatabaseReference userRef = databaseReference.child("users").child(this.id);
+        userRef.setValue(this);
     }
 
     public String getPhotoPath() {
@@ -67,6 +56,7 @@ public class User implements Serializable {
         this.email = email;
     }
 
+    @Exclude
     public String getPassword() {
         return password;
     }

@@ -48,6 +48,7 @@ public class RegisterActivity extends AppCompatActivity {
                 String password = binding.fieldPassword.getText().toString();
 
                 if (Utils.someEmptyFields(name, email, password)){
+                    binding.progressRegister.setVisibility(View.GONE);
                     Utils.toastMessage(getApplicationContext(), StringUtils.emptyFields);
                 } else {
                     binding.progressRegister.setVisibility(View.VISIBLE);
@@ -62,21 +63,37 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void saveUserFirebase(User user){
+
+        binding.progressRegister.setVisibility(View.VISIBLE);
         FirebaseAuth auth = FirebaseUtils.getFirebaseAuth();
-        auth.createUserWithEmailAndPassword(user.getEmail(), user.getPassword())
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+        auth.createUserWithEmailAndPassword(
+                user.getEmail(),
+                user.getPassword()
+        ).addOnCompleteListener(
+                this,
+                new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
 
-                        binding.progressRegister.setVisibility(View.GONE);
                         if (task.isSuccessful()){
 
-                            user.save();
-                            UserFirebase.updateUserName(user.getName());
-                            Utils.toastMessage(getApplicationContext(), StringUtils.registeredSuccessfully);
-                            Intent i = new Intent(RegisterActivity.this, MainActivity.class);
-                            startActivity(i);
-                            finish();
+                            try {
+
+                                binding.progressRegister.setVisibility(View.GONE);
+
+                                String uid = task.getResult().getUser().getUid();
+                                user.setId(uid);
+                                user.save();
+                                UserFirebase.updateUserName(user.getName());
+
+                                Utils.toastMessage(getApplicationContext(), StringUtils.registeredSuccessfully);
+                                Intent i = new Intent(RegisterActivity.this, MainActivity.class);
+                                startActivity(i);
+                                finish();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
 
                         } else {
 
