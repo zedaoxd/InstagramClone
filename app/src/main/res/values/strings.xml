@@ -27,4 +27,6 @@
     <string name="text_following">Seguindo</string>
     <string name="alter_photo">Alterar foto</string>
     <string name="save_alter">Salvar Alterações</string>
+
+    <string name="follow">Seguir</string>
 </resources>

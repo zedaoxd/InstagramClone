@@ -1,5 +1,6 @@
 package com.example.instagramclone.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,12 +11,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.SearchView;
 
+import com.example.instagramclone.activity.FriendProfileActivity;
 import com.example.instagramclone.adapter.AdapterSearch;
 import com.example.instagramclone.databinding.FragmentSearchBinding;
 import com.example.instagramclone.model.User;
 import com.example.instagramclone.util.FirebaseUtils;
+import com.example.instagramclone.util.RecyclerItemClickListener;
+import com.example.instagramclone.util.StringUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,6 +48,7 @@ public class SearchFragment extends Fragment {
         initialSettings();
 
         searchView();
+        clickEventRecyclerView();
         return binding.getRoot();
     }
 
@@ -105,5 +111,32 @@ public class SearchFragment extends Fragment {
                 }
             });
         }
+    }
+
+    private void clickEventRecyclerView(){
+        binding.recyclerViewSearch.addOnItemTouchListener(new RecyclerItemClickListener(
+                getActivity(),
+                binding.recyclerViewSearch,
+                new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position)
+                    {
+                        User selectedUser = userList.get(position);
+                        Intent i = new Intent(getActivity(), FriendProfileActivity.class);
+                        i.putExtra(StringUtils.friendProfile, selectedUser);
+                        startActivity(i);
+                    }
+
+                    @Override
+                    public void onLongItemClick(View view, int position) {
+
+                    }
+
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                    }
+                }
+        ));
     }
 }

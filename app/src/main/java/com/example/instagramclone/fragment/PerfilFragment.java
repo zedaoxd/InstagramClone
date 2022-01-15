@@ -33,7 +33,7 @@ public class PerfilFragment extends Fragment {
     }
 
     private void clickButtonEditPerfil(){
-        binding.buttonEditPerfil.setOnClickListener(new View.OnClickListener() {
+        binding.profileActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(getActivity(), EditPerfilActivity.class));

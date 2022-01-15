@@ -16,4 +16,7 @@ public class StringUtils implements Serializable {
 
     /* folders in firebase */
     public static final String users = "users";
+
+    /* keys intent */
+    public static final String friendProfile = "friendProfile";
 }

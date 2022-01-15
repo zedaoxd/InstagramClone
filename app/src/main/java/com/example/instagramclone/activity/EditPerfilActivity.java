@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -69,8 +70,10 @@ public class EditPerfilActivity extends AppCompatActivity {
         user = UserFirebase.getDataCurrentUser();
         storageReference = FirebaseUtils.getFirebaseStorage();
 
-        Uri url = Uri.parse(user.getPathPhoto());
-        if (url != null){
+
+        String pathImage = user.getPathPhoto();
+        if (pathImage != null && !pathImage.equals("")){
+            Uri url = Uri.parse(pathImage);
             Glide.with(EditPerfilActivity.this)
                     .load(url)
                     .into(binding.imagePerfilEdit);

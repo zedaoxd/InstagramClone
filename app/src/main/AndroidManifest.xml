@@ -10,9 +10,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.InstagramClone">
         <activity
+            android:name=".activity.FriendProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.EditPerfilActivity"
             android:exported="false"
-            android:parentActivityName=".activity.MainActivity"/>
+            android:parentActivityName=".activity.MainActivity" />
         <activity
             android:name=".activity.RegisterActivity"
             android:exported="false"

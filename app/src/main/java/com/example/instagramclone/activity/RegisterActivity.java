@@ -74,13 +74,10 @@ public class RegisterActivity extends AppCompatActivity {
                 new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-
+                        binding.progressRegister.setVisibility(View.GONE);
                         if (task.isSuccessful()){
 
                             try {
-
-                                binding.progressRegister.setVisibility(View.GONE);
-
                                 String uid = task.getResult().getUser().getUid();
                                 user.setId(uid);
                                 user.save();
