@@ -1,7 +1,7 @@
 package com.example.instagramclone.model;
 
-import com.example.instagramclone.util.Base64Utils;
-import com.example.instagramclone.util.StringUtils;
+import androidx.annotation.NonNull;
+
 import com.example.instagramclone.util.FirebaseUtils;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
@@ -15,7 +15,7 @@ public class User implements Serializable {
     private String name;
     private String email;
     private String password;
-    private String photoPath;
+    private String pathPhoto;
 
     public User() {
     }
@@ -33,23 +33,24 @@ public class User implements Serializable {
         userRef.updateChildren(convertToMap());
     }
 
+    @NonNull
     private Map<String, Object> convertToMap(){
 
         HashMap<String, Object> userMap = new HashMap<>();
         userMap.put("email", this.email);
         userMap.put("name", this.name);
         userMap.put("id", this.id);
-        userMap.put("pathPhoto", this.photoPath);
+        userMap.put("pathPhoto", this.pathPhoto);
 
         return userMap;
     }
 
-    public String getPhotoPath() {
-        return photoPath;
+    public String getPathPhoto() {
+        return pathPhoto;
     }
 
-    public void setPhotoPath(String photoPath) {
-        this.photoPath = photoPath;
+    public void setPathPhoto(String pathPhoto) {
+        this.pathPhoto = pathPhoto;
     }
 
     public String getId() {

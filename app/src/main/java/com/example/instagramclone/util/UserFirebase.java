@@ -76,9 +76,9 @@ public class UserFirebase implements Serializable {
         user.setId(userFirebase.getUid());
 
         if (userFirebase.getPhotoUrl() == null){
-            user.setPhotoPath("");
+            user.setPathPhoto("");
         } else {
-            user.setPhotoPath(userFirebase.getPhotoUrl().toString());
+            user.setPathPhoto(userFirebase.getPhotoUrl().toString());
         }
 
         return user;

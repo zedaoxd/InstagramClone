@@ -6,14 +6,12 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -71,7 +69,7 @@ public class EditPerfilActivity extends AppCompatActivity {
         user = UserFirebase.getDataCurrentUser();
         storageReference = FirebaseUtils.getFirebaseStorage();
 
-        Uri url = UserFirebase.getCurrentUserFirebase().getPhotoUrl();
+        Uri url = Uri.parse(user.getPathPhoto());
         if (url != null){
             Glide.with(EditPerfilActivity.this)
                     .load(url)
@@ -146,7 +144,7 @@ public class EditPerfilActivity extends AppCompatActivity {
         UserFirebase.updateUserPhoto(url);
 
         // save in database
-        user.setPhotoPath(url.toString());
+        user.setPathPhoto(url.toString());
         user.update();
     }
 

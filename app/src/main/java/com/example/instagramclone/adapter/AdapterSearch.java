@@ -2,7 +2,6 @@ package com.example.instagramclone.adapter;
 
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,16 +37,20 @@ public class AdapterSearch extends RecyclerView.Adapter<AdapterSearch.MyViewHold
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+
         User user = userList.get(position);
+
         holder.name.setText(user.getName());
-        if (user.getPhotoPath() != null){
-            Uri url = Uri.parse(user.getPhotoPath());
-            Glide.with(context)
-                    .load(url)
-                    .into(holder.photo);
+
+        if (user.getPathPhoto() != null){
+
+            Uri url = Uri.parse(user.getPathPhoto());
+            Glide.with(context).load(url).into(holder.photo);
+
         } else {
-            Log.i("foto", "foto: " + user.getPhotoPath());
+
             holder.photo.setImageResource(R.drawable.avatar);
+
         }
     }
 
@@ -64,7 +67,7 @@ public class AdapterSearch extends RecyclerView.Adapter<AdapterSearch.MyViewHold
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             photo = itemView.findViewById(R.id.imagePhotoSearch);
-            name = itemView.findViewById(R.id.textNameSearch);
+            name = itemView.findViewById(R.id.textNameSearch35);
         }
     }
 }

@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
 
-import com.example.instagramclone.R;
 import com.example.instagramclone.adapter.AdapterSearch;
 import com.example.instagramclone.databinding.FragmentSearchBinding;
 import com.example.instagramclone.model.User;
@@ -25,7 +24,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class SearchFragment extends Fragment {
 
@@ -79,10 +77,10 @@ public class SearchFragment extends Fragment {
         });
     }
 
-    private void searchUsers(String searchText){
+    private void searchUsers(@NonNull String searchText){
         userList.clear();
 
-        if (searchText.length() >= 2){
+        if (searchText.length() > 1){
             Query query = userRef.orderByChild("name")
                     .startAt(searchText)
                     .endAt(searchText + "\uf8ff");
@@ -95,7 +93,6 @@ public class SearchFragment extends Fragment {
 
                     for (DataSnapshot ds : snapshot.getChildren()){
                         User user = ds.getValue(User.class);
-                        Log.i("foto", "foto: " + user.getPhotoPath());
                         userList.add(user);
                     }
 
