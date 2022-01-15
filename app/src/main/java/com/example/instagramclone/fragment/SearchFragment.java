@@ -2,15 +2,37 @@ package com.example.instagramclone.fragment;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 
 import com.example.instagramclone.R;
+import com.example.instagramclone.adapter.AdapterSearch;
+import com.example.instagramclone.databinding.FragmentSearchBinding;
+import com.example.instagramclone.model.User;
+import com.example.instagramclone.util.FirebaseUtils;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class SearchFragment extends Fragment {
+
+    private FragmentSearchBinding binding;
+    private List<User> userList;
+    private DatabaseReference userRef;
+    private AdapterSearch adapterSearch;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -19,7 +41,72 @@ public class SearchFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_search, container, false);
+        binding = FragmentSearchBinding.inflate(inflater, container, false);
+        initialSettings();
+
+        searchView();
+        return binding.getRoot();
+    }
+
+    private void initialSettings(){
+        userList = new ArrayList<>();
+        userRef = FirebaseUtils.getDatabaseReference().child("users");
+
+        // adapter
+        adapterSearch = new AdapterSearch(userList, getContext());
+
+        // recycler view
+        binding.recyclerViewSearch.setHasFixedSize(true);
+        binding.recyclerViewSearch.setLayoutManager(new LinearLayoutManager(getActivity()));
+        binding.recyclerViewSearch.setAdapter(adapterSearch);
+    }
+
+    private void searchView(){
+        binding.searchView.setQueryHint("Buscar usuários");
+
+        binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                String searchText = s.toUpperCase();
+                searchUsers(searchText);
+                return true;
+            }
+        });
+    }
+
+    private void searchUsers(String searchText){
+        userList.clear();
+
+        if (searchText.length() >= 2){
+            Query query = userRef.orderByChild("name")
+                    .startAt(searchText)
+                    .endAt(searchText + "\uf8ff");
+
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                    userList.clear();
+
+                    for (DataSnapshot ds : snapshot.getChildren()){
+                        User user = ds.getValue(User.class);
+                        Log.i("foto", "foto: " + user.getPhotoPath());
+                        userList.add(user);
+                    }
+
+                    adapterSearch.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
     }
 }

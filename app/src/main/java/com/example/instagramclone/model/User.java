@@ -61,11 +61,11 @@ public class User implements Serializable {
     }
 
     public String getName() {
-        return name;
+        return name.toUpperCase();
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name.toUpperCase();
     }
 
     public String getEmail() {

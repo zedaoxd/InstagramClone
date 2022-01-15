@@ -1,5 +1,6 @@
 package com.example.instagramclone.util;
 
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -28,6 +29,30 @@ public class UserFirebase implements Serializable {
             UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest.Builder()
                     .setDisplayName(name)
                     .build();
+
+            user.updateProfile(userProfileChangeRequest).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (!task.isSuccessful()){
+                        Log.d("Perfil", "Erro ao atualizar nome de perfil");
+                    }
+                }
+            });
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void updateUserPhoto(Uri url){
+
+        try {
+
+            FirebaseUser user = getCurrentUserFirebase();
+            UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest.Builder()
+                    .setPhotoUri(url)
+                    .build();
+
             user.updateProfile(userProfileChangeRequest).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
@@ -57,5 +82,9 @@ public class UserFirebase implements Serializable {
         }
 
         return user;
+    }
+
+    public static String getUserId() {
+        return getCurrentUserFirebase().getUid();
     }
 }

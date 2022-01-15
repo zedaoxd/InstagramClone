@@ -13,16 +13,20 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.instagramclone.R;
 import com.example.instagramclone.databinding.ActivityEditPerfilBinding;
 import com.example.instagramclone.model.User;
 import com.example.instagramclone.util.FirebaseUtils;
 import com.example.instagramclone.util.UserFirebase;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -48,9 +52,7 @@ public class EditPerfilActivity extends AppCompatActivity {
         // disable the email field
         binding.textEmail.setFocusable(false);
 
-        user = UserFirebase.getDataCurrentUser();
-        storageReference = FirebaseUtils.getFirebaseStorage();
-
+        recoveryData();
         activityResultLauncher = launcher();
 
         settingsToolbar();
@@ -65,10 +67,25 @@ public class EditPerfilActivity extends AppCompatActivity {
         return false;
     }
 
+    private void recoveryData(){
+        user = UserFirebase.getDataCurrentUser();
+        storageReference = FirebaseUtils.getFirebaseStorage();
+
+        Uri url = UserFirebase.getCurrentUserFirebase().getPhotoUrl();
+        if (url != null){
+            Glide.with(EditPerfilActivity.this)
+                    .load(url)
+                    .into(binding.imagePerfilEdit);
+        } else {
+            binding.imagePerfilEdit.setImageResource(R.drawable.avatar);
+        }
+    }
+
     private ActivityResultLauncher<Intent> launcher() {
         return registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @Override
             public void onActivityResult(ActivityResult result) {
+
                 if (result.getResultCode() == RESULT_OK && result.getData() != null) {
 
                     try {
@@ -85,7 +102,7 @@ public class EditPerfilActivity extends AppCompatActivity {
                             StorageReference imageRef = storageReference
                                     .child("images")
                                     .child("perfil")
-                                    .child(user.getId() + ".jpeg");
+                                    .child(UserFirebase.getUserId() + ".jpeg");
 
                             UploadTask uploadTask = imageRef.putBytes(dataImage);
                             uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -98,6 +115,16 @@ public class EditPerfilActivity extends AppCompatActivity {
                             }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                 @Override
                                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                                    imageRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Uri> task) {
+                                                    Uri uri = task.getResult();
+                                                    updatePhotoUser(uri);
+                                                }
+                                            }
+                                    );
+
                                     Toast.makeText(EditPerfilActivity.this,
                                             "Sucesso ao fazer upload da image",
                                             Toast.LENGTH_LONG).show();
@@ -112,6 +139,15 @@ public class EditPerfilActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void updatePhotoUser(Uri url){
+        // save in authentication
+        UserFirebase.updateUserPhoto(url);
+
+        // save in database
+        user.setPhotoPath(url.toString());
+        user.update();
     }
 
 
@@ -148,7 +184,7 @@ public class EditPerfilActivity extends AppCompatActivity {
 
     private void setDataCurrentUser(){
         FirebaseUser user = UserFirebase.getCurrentUserFirebase();
-        binding.textName.setText(user.getDisplayName());
+        binding.textName.setText(user.getDisplayName().toUpperCase());
         binding.textEmail.setText(user.getEmail());
     }
 
