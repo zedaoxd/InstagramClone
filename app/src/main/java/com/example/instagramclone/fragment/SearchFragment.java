@@ -21,6 +21,7 @@ import com.example.instagramclone.model.User;
 import com.example.instagramclone.util.FirebaseUtils;
 import com.example.instagramclone.util.RecyclerItemClickListener;
 import com.example.instagramclone.util.StringUtils;
+import com.example.instagramclone.util.UserFirebase;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -96,9 +97,15 @@ public class SearchFragment extends Fragment {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                     userList.clear();
+                    String idCurrentUser = UserFirebase.getUserId();
 
                     for (DataSnapshot ds : snapshot.getChildren()){
                         User user = ds.getValue(User.class);
+
+                        if (user.getId().equals(idCurrentUser)){
+                            continue;
+                        }
+
                         userList.add(user);
                     }
 

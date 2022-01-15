@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.instagramclone.R;
 import com.example.instagramclone.model.User;
+import com.example.instagramclone.util.UserFirebase;
 
 import java.util.List;
 

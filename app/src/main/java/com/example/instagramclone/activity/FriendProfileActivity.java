@@ -139,6 +139,34 @@ public class FriendProfileActivity extends AppCompatActivity {
 
         binding.includeFragment.profileActionButton.setText(R.string.following);
         binding.includeFragment.profileActionButton.setOnClickListener(null);
+
+        incrementFollowingLoggedUser(currentUser);
+        increaseFriendFollowers(userFriend);
+    }
+
+    private void incrementFollowingLoggedUser(User user){
+
+        int following = user.getFollowing() + 1;
+
+        HashMap<String,Object> dataFollowing = new HashMap<>();
+        dataFollowing.put("following", following);
+
+        DatabaseReference followingUser = usersRef
+                .child(user.getId());
+
+        followingUser.updateChildren(dataFollowing);
+    }
+
+    private void increaseFriendFollowers(User friend){
+        int followers = friend.getFollowers() + 1;
+
+        HashMap<String,Object> dataFollowers = new HashMap<>();
+        dataFollowers.put("followers", followers);
+
+        DatabaseReference followersUser = usersRef
+                .child(friend.getId());
+
+        followersUser.updateChildren(dataFollowers);
     }
 
     private void retrieveSelectedUser(){
