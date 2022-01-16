@@ -23,6 +23,7 @@ import com.example.instagramclone.databinding.ActivityEditPerfilBinding;
 import com.example.instagramclone.model.User;
 import com.example.instagramclone.util.FirebaseUtils;
 import com.example.instagramclone.util.Permission;
+import com.example.instagramclone.util.StringUtils;
 import com.example.instagramclone.util.UserFirebase;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -108,8 +109,8 @@ public class EditPerfilActivity extends AppCompatActivity {
                             byte[] dataImage = baos.toByteArray();
 
                             StorageReference imageRef = storageReference
-                                    .child("images")
-                                    .child("perfil")
+                                    .child(StringUtils.images)
+                                    .child(StringUtils.profile)
                                     .child(UserFirebase.getUserId() + ".jpeg");
 
                             UploadTask uploadTask = imageRef.putBytes(dataImage);

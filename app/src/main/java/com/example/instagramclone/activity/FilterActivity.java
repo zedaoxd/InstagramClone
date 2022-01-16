@@ -7,22 +7,35 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
 import com.example.instagramclone.R;
 import com.example.instagramclone.adapter.AdapterThumbnails;
 import com.example.instagramclone.databinding.ActivityFilterBinding;
+import com.example.instagramclone.model.Post;
+import com.example.instagramclone.util.FirebaseUtils;
 import com.example.instagramclone.util.RecyclerItemClickListener;
+import com.example.instagramclone.util.StringUtils;
+import com.example.instagramclone.util.UserFirebase;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.zomato.photofilters.FilterPack;
 import com.zomato.photofilters.imageprocessors.Filter;
 import com.zomato.photofilters.utils.ThumbnailItem;
 import com.zomato.photofilters.utils.ThumbnailsManager;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -39,6 +52,8 @@ public class FilterActivity extends AppCompatActivity {
     private Bitmap imageFilter;
     private List<ThumbnailItem> thumbnailItemList;
     private AdapterThumbnails adapterThumbnails;
+    private String idCurrentUser;
+    private ThumbnailItem regularFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +67,7 @@ public class FilterActivity extends AppCompatActivity {
         if (bundle != null){
             byte[] dataImage = bundle.getByteArray("photo");
             image = BitmapFactory.decodeByteArray(dataImage, 0, dataImage.length);
+            imageFilter = image.copy(image.getConfig(), true );
             binding.imagePhotoFilter.setImageBitmap(image);
 
             recyclerViewThumbs();
@@ -70,7 +86,7 @@ public class FilterActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.menu_filter_post){
-
+            publishPost();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -79,6 +95,59 @@ public class FilterActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         finish();
         return false;
+    }
+
+    private void publishPost(){
+        binding.progressBarSavePost.setVisibility(View.VISIBLE);
+        String description = binding.textDescriptionFilter.getText().toString();
+
+        Post post = new Post();
+        post.setUserId(idCurrentUser);
+        post.setDescription(description);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        imageFilter.compress(Bitmap.CompressFormat.JPEG, 75, baos);
+        byte[] dataImage = baos.toByteArray();
+
+        StorageReference storageRef = FirebaseUtils.getFirebaseStorage();
+        StorageReference imageRef = storageRef
+                .child(StringUtils.images)
+                .child(StringUtils.posts)
+                .child(post.getId() + ".jpeg");
+
+        UploadTask uploadTask = imageRef.putBytes(dataImage);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                binding.progressBarSavePost.setVisibility(View.GONE);
+                Toast.makeText(FilterActivity.this,
+                        "Erro ao salvar postagem",
+                        Toast.LENGTH_LONG).show();
+
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                imageRef.getDownloadUrl().addOnCompleteListener(
+                        new OnCompleteListener<Uri>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Uri> task) {
+                                Uri url = task.getResult();
+                                post.setPathPhoto(url.toString());
+
+                                if (post.save()){
+                                    Toast.makeText(FilterActivity.this,
+                                            "Sucesso ao salvar postagem",
+                                            Toast.LENGTH_LONG).show();
+                                    binding.progressBarSavePost.setVisibility(View.GONE);
+                                    finish();
+                                }
+                            }
+                        }
+                );
+            }
+        });
     }
 
     private void clickEventRecyclerViewFilters(){
@@ -90,8 +159,9 @@ public class FilterActivity extends AppCompatActivity {
                     public void onItemClick(View view, int position) {
 
                         ThumbnailItem item = thumbnailItemList.get(position);
-
+                        // remove the current filter before applying the other one
                         imageFilter = image.copy(image.getConfig(), true );
+
                         Filter filter = item.filter;
                         binding.imagePhotoFilter.setImageBitmap(filter.processFilter(imageFilter));
                     }
@@ -125,6 +195,7 @@ public class FilterActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         thumbnailItemList = new ArrayList<>();
+        idCurrentUser = UserFirebase.getUserId();
     }
 
     private void retrieveFilters(){
@@ -132,10 +203,10 @@ public class FilterActivity extends AppCompatActivity {
         thumbnailItemList.clear();
 
         // settings filter normal
-        ThumbnailItem item = new ThumbnailItem();
-        item.image = image;
-        item.filterName = "Normal";
-        ThumbnailsManager.addThumb(item);
+        regularFilter = new ThumbnailItem();
+        regularFilter.image = image;
+        regularFilter.filterName = "Normal";
+        ThumbnailsManager.addThumb(regularFilter);
 
         // list all filters
         List<Filter> filters = FilterPack.getFilterPack(getApplicationContext());
