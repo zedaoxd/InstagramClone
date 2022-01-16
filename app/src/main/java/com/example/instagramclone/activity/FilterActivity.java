@@ -29,6 +29,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.zomato.photofilters.FilterPack;
@@ -55,6 +59,10 @@ public class FilterActivity extends AppCompatActivity {
     private AdapterThumbnails adapterThumbnails;
     private String idCurrentUser;
     private ThumbnailItem regularFilter;
+    private DatabaseReference currentUserRef;
+    private DatabaseReference usersRef;
+    private boolean isLoading;
+    private User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,57 +107,88 @@ public class FilterActivity extends AppCompatActivity {
     }
 
     private void publishPost(){
-        binding.progressBarSavePost.setVisibility(View.VISIBLE);
-        String description = binding.textDescriptionFilter.getText().toString();
 
-        Post post = new Post();
-        post.setUserId(idCurrentUser);
-        post.setDescription(description);
+        if (isLoading){
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imageFilter.compress(Bitmap.CompressFormat.JPEG, 75, baos);
-        byte[] dataImage = baos.toByteArray();
+            Toast.makeText(getApplicationContext(), "carregando dados aguarde", Toast.LENGTH_LONG).show();
 
-        StorageReference storageRef = FirebaseUtils.getFirebaseStorage();
-        StorageReference imageRef = storageRef
-                .child(StringUtils.images)
-                .child(StringUtils.posts)
-                .child(post.getId() + ".jpeg");
+        } else {
 
-        UploadTask uploadTask = imageRef.putBytes(dataImage);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                binding.progressBarSavePost.setVisibility(View.GONE);
-                Toast.makeText(FilterActivity.this,
-                        "Erro ao salvar postagem",
-                        Toast.LENGTH_LONG).show();
+            String description = binding.textDescriptionFilter.getText().toString();
+            Post post = new Post();
+            post.setUserId(idCurrentUser);
+            post.setDescription(description);
 
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            imageFilter.compress(Bitmap.CompressFormat.JPEG, 75, baos);
+            byte[] dataImage = baos.toByteArray();
 
-                imageRef.getDownloadUrl().addOnCompleteListener(
-                        new OnCompleteListener<Uri>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Uri> task) {
-                                Uri url = task.getResult();
-                                post.setPathPhoto(url.toString());
+            StorageReference storageRef = FirebaseUtils.getFirebaseStorage();
+            StorageReference imageRef = storageRef
+                    .child(StringUtils.images)
+                    .child(StringUtils.posts)
+                    .child(post.getId() + ".jpeg");
 
-                                if (post.save()){
-                                    Toast.makeText(FilterActivity.this,
-                                            "Sucesso ao salvar postagem",
-                                            Toast.LENGTH_LONG).show();
-                                    binding.progressBarSavePost.setVisibility(View.GONE);
-                                    finish();
+            UploadTask uploadTask = imageRef.putBytes(dataImage);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(FilterActivity.this,
+                            "Erro ao salvar postagem",
+                            Toast.LENGTH_LONG).show();
+
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                    imageRef.getDownloadUrl().addOnCompleteListener(
+                            new OnCompleteListener<Uri>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Uri> task) {
+                                    Uri url = task.getResult();
+                                    post.setPathPhoto(url.toString());
+
+                                    if (post.save()){
+
+                                        int postQuantity = currentUser.getPosts() + 1;
+                                        currentUser.setPosts(postQuantity);
+                                        currentUser.updatePostQuantity();
+
+                                        Toast.makeText(FilterActivity.this,
+                                                "Sucesso ao salvar postagem",
+                                                Toast.LENGTH_LONG).show();
+                                        finish();
+                                    }
                                 }
                             }
-                        }
-                );
+                    );
+                }
+            });
+        }
+    }
+
+
+    private void recoverLoggedUserData(){
+
+        loadingData(true);
+
+        currentUserRef = usersRef.child(idCurrentUser);
+        currentUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                currentUser = snapshot.getValue(User.class);
+                loadingData(false);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
     }
+
 
     private void clickEventRecyclerViewFilters(){
         binding.recyclerFilters.addOnItemTouchListener(new RecyclerItemClickListener(
@@ -197,6 +236,19 @@ public class FilterActivity extends AppCompatActivity {
 
         thumbnailItemList = new ArrayList<>();
         idCurrentUser = UserFirebase.getUserId();
+        usersRef = FirebaseUtils.getDatabaseReference().child(StringUtils.users);
+
+        recoverLoggedUserData();
+    }
+
+    private void loadingData(boolean state){
+        if (state){
+            isLoading = true;
+            binding.progressBarSavePost.setVisibility(View.VISIBLE);
+        } else {
+            isLoading = false;
+            binding.progressBarSavePost.setVisibility(View.GONE);
+        }
     }
 
     private void retrieveFilters(){

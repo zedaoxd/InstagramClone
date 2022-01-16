@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import com.bumptech.glide.Glide;
@@ -120,11 +119,7 @@ public class FriendProfileActivity extends AppCompatActivity {
                 for (DataSnapshot ds : snapshot.getChildren()){
                     Post post = ds.getValue(Post.class);
                     urlPhotos.add(Uri.parse(post.getPathPhoto()));
-                    //Log.i("post", "path: " + post.getPathPhoto());
                 }
-
-                String size = String.valueOf(urlPhotos.size());
-                binding.includeFragment.textPublications.setText(size);
 
                 adapterGridPhotos = new AdapterGridPhotos(getApplicationContext(), R.layout.grid_post, urlPhotos);
                 binding.includeFragment.gridViewPerfil.setAdapter(adapterGridPhotos);
@@ -277,11 +272,11 @@ public class FriendProfileActivity extends AppCompatActivity {
                 User user = snapshot.getValue(User.class);
                 String followers = String.valueOf(user.getFollowers());
                 String following = String.valueOf(user.getFollowing());
-                //String posts = String.valueOf(user.getPosts());
+                String posts = String.valueOf(user.getPosts());
 
                 binding.includeFragment.textFollowers.setText(followers);
                 binding.includeFragment.textFollowing.setText(following);
-                //binding.includeFragment.textPublications.setText(posts);
+                binding.includeFragment.textPublications.setText(posts);
             }
 
             @Override

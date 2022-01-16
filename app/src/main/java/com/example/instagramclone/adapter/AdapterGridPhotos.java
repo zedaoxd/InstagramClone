@@ -18,6 +18,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
+import java.util.Collections;
 import java.util.List;
 
 public class AdapterGridPhotos extends ArrayAdapter<Uri> {
@@ -31,6 +32,7 @@ public class AdapterGridPhotos extends ArrayAdapter<Uri> {
         this.context = context;
         this.resource = resource;
         this.urls = objects;
+        Collections.reverse(this.urls);
     }
 
     @NonNull
@@ -53,7 +55,10 @@ public class AdapterGridPhotos extends ArrayAdapter<Uri> {
 
         Uri url = urls.get(position);
         ImageLoader imageLoader = ImageLoader.getInstance();
-        imageLoader.displayImage(String.valueOf(url), viewHolder.image, new ImageLoadingListener() {
+        imageLoader.displayImage(
+                String.valueOf(url),
+                viewHolder.image,
+                new ImageLoadingListener() {
             @Override
             public void onLoadingStarted(String imageUri, View view) {
                 viewHolder.progressBar.setVisibility(View.VISIBLE);
