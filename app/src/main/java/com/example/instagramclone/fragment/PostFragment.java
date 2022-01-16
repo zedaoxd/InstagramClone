@@ -97,10 +97,9 @@ public class PostFragment extends Fragment {
 
                 try {
 
-                    Bitmap image = null;
                     Intent data = result.getData();
                     Uri uri = data.getData();
-                    image = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
+                    Bitmap image = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
                     startIntentFilter(image);
 
                 } catch (IOException e) {

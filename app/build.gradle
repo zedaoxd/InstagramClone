@@ -55,6 +55,9 @@ dependencies {
     /* Glide */
     implementation 'com.firebaseui:firebase-ui-storage:7.2.0'
 
+    /* Filters */
+    implementation 'info.androidhive:imagefilters:1.0.7'
+
 }
 
 apply plugin: 'com.android.application'

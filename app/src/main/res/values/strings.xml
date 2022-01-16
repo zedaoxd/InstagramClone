@@ -34,4 +34,10 @@
 
     <string name="open_gallery">Abrir galeria</string>
     <string name="open_camera">Abrir camera</string>
+
+    <string name="filters">Filtros</string>
+    <string name="to_post">Publicar</string>
+
+    <string name="description">Descrição</string>
+
 </resources>
