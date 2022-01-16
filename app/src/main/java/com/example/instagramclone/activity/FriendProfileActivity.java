@@ -5,11 +5,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.bumptech.glide.Glide;
 import com.example.instagramclone.R;
+import com.example.instagramclone.adapter.AdapterGridPhotos;
 import com.example.instagramclone.databinding.ActivityFriendProfileBinding;
+import com.example.instagramclone.model.Post;
 import com.example.instagramclone.model.User;
 import com.example.instagramclone.util.FirebaseUtils;
 import com.example.instagramclone.util.StringUtils;
@@ -18,8 +21,14 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 public class FriendProfileActivity extends AppCompatActivity {
@@ -27,12 +36,14 @@ public class FriendProfileActivity extends AppCompatActivity {
     private ActivityFriendProfileBinding binding;
     private User selectedUser;
     private User currentUser;
+    private AdapterGridPhotos adapterGridPhotos;
 
     private DatabaseReference firebaseRef;
     private DatabaseReference usersRef;
     private DatabaseReference friendRef;
     private DatabaseReference currentUserRef;
     private DatabaseReference followersRef;
+    private DatabaseReference postsUserRef;
 
     private ValueEventListener valueEventListener;
     private String idCurrentUser;
@@ -81,6 +92,49 @@ public class FriendProfileActivity extends AppCompatActivity {
 
         /* User id */
         idCurrentUser = UserFirebase.getUserId();
+    }
+
+    private void initializeImageLoader(){
+        ImageLoaderConfiguration settings = new ImageLoaderConfiguration
+                .Builder(this)
+                .memoryCache(new LruMemoryCache(2 * 1024 * 1024))
+                .memoryCacheSize(2 * 1024 * 1024)
+                .diskCacheSize(50 * 1024 * 1024)
+                .diskCacheFileCount(100)
+                .diskCacheFileNameGenerator(new HashCodeFileNameGenerator())
+                .build();
+
+        ImageLoader.getInstance().init(settings);
+    }
+
+    private void loadingPhotosPosts(){
+        postsUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                int gridSize = getResources().getDisplayMetrics().widthPixels;
+                int imageWidth = gridSize / 3;
+                binding.includeFragment.gridViewPerfil.setColumnWidth(imageWidth);
+
+                List<Uri> urlPhotos = new ArrayList<>();
+                for (DataSnapshot ds : snapshot.getChildren()){
+                    Post post = ds.getValue(Post.class);
+                    urlPhotos.add(Uri.parse(post.getPathPhoto()));
+                    //Log.i("post", "path: " + post.getPathPhoto());
+                }
+
+                String size = String.valueOf(urlPhotos.size());
+                binding.includeFragment.textPublications.setText(size);
+
+                adapterGridPhotos = new AdapterGridPhotos(getApplicationContext(), R.layout.grid_post, urlPhotos);
+                binding.includeFragment.gridViewPerfil.setAdapter(adapterGridPhotos);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void verifyUserFollowFriend(){
@@ -174,6 +228,12 @@ public class FriendProfileActivity extends AppCompatActivity {
 
         if (bundle != null){
             selectedUser = (User) bundle.getSerializable(StringUtils.friendProfile);
+            postsUserRef = FirebaseUtils.getDatabaseReference()
+                .child(StringUtils.posts)
+                .child(selectedUser.getId());
+
+            initializeImageLoader();
+            loadingPhotosPosts();
         }
     }
 
@@ -217,11 +277,11 @@ public class FriendProfileActivity extends AppCompatActivity {
                 User user = snapshot.getValue(User.class);
                 String followers = String.valueOf(user.getFollowers());
                 String following = String.valueOf(user.getFollowing());
-                String posts = String.valueOf(user.getPosts());
+                //String posts = String.valueOf(user.getPosts());
 
                 binding.includeFragment.textFollowers.setText(followers);
                 binding.includeFragment.textFollowing.setText(following);
-                binding.includeFragment.textPublications.setText(posts);
+                //binding.includeFragment.textPublications.setText(posts);
             }
 
             @Override

@@ -20,6 +20,7 @@ import com.example.instagramclone.R;
 import com.example.instagramclone.adapter.AdapterThumbnails;
 import com.example.instagramclone.databinding.ActivityFilterBinding;
 import com.example.instagramclone.model.Post;
+import com.example.instagramclone.model.User;
 import com.example.instagramclone.util.FirebaseUtils;
 import com.example.instagramclone.util.RecyclerItemClickListener;
 import com.example.instagramclone.util.StringUtils;
