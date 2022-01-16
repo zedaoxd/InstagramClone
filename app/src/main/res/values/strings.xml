@@ -31,4 +31,7 @@
     <string name="follow">Seguir</string>
     <string name="following">Seguindo</string>
     <string name="loading">Carregando</string>
+
+    <string name="open_gallery">Abrir galeria</string>
+    <string name="open_camera">Abrir camera</string>
 </resources>

@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -21,6 +22,7 @@ import com.example.instagramclone.R;
 import com.example.instagramclone.databinding.ActivityEditPerfilBinding;
 import com.example.instagramclone.model.User;
 import com.example.instagramclone.util.FirebaseUtils;
+import com.example.instagramclone.util.Permission;
 import com.example.instagramclone.util.UserFirebase;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -40,6 +42,10 @@ public class EditPerfilActivity extends AppCompatActivity {
     private User user;
     private StorageReference storageReference;
 
+    private String[] permitions = new String[]{
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +54,7 @@ public class EditPerfilActivity extends AppCompatActivity {
         binding = ActivityEditPerfilBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        Permission.validatePermissions(permitions, this, 1);
         // disable the email field
         binding.textEmail.setFocusable(false);
 
