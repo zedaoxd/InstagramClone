@@ -3,9 +3,11 @@ package com.example.instagramclone.activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 
 import com.bumptech.glide.Glide;
 import com.example.instagramclone.R;
@@ -26,6 +28,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -46,6 +49,7 @@ public class FriendProfileActivity extends AppCompatActivity {
 
     private ValueEventListener valueEventListener;
     private String idCurrentUser;
+    private List<Post> posts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +64,7 @@ public class FriendProfileActivity extends AppCompatActivity {
         retrieveSelectedUser();
         settingsToolbar();
         setPhotoFriend();
+        openPhotoClicked();
     }
 
     @Override
@@ -79,6 +84,19 @@ public class FriendProfileActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         friendRef.removeEventListener(valueEventListener);
+    }
+
+    private void openPhotoClicked(){
+        binding.includeFragment.gridViewPerfil.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Post post = posts.get(i);
+                Intent intent = new Intent(FriendProfileActivity.this, ViewPostActivity.class);
+                intent.putExtra(StringUtils.posts, post);
+                intent.putExtra(StringUtils.users, selectedUser);
+                startActivity(intent);
+            }
+        });
     }
 
     private void initialSettings(){
@@ -107,6 +125,8 @@ public class FriendProfileActivity extends AppCompatActivity {
     }
 
     private void loadingPhotosPosts(){
+        posts = new ArrayList<>();
+
         postsUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -118,8 +138,10 @@ public class FriendProfileActivity extends AppCompatActivity {
                 List<Uri> urlPhotos = new ArrayList<>();
                 for (DataSnapshot ds : snapshot.getChildren()){
                     Post post = ds.getValue(Post.class);
+                    posts.add(post);
                     urlPhotos.add(Uri.parse(post.getPathPhoto()));
                 }
+                Collections.reverse(posts);
 
                 adapterGridPhotos = new AdapterGridPhotos(getApplicationContext(), R.layout.grid_post, urlPhotos);
                 binding.includeFragment.gridViewPerfil.setAdapter(adapterGridPhotos);

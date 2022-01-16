@@ -4,7 +4,9 @@ import com.example.instagramclone.util.FirebaseUtils;
 import com.example.instagramclone.util.StringUtils;
 import com.google.firebase.database.DatabaseReference;
 
-public class Post {
+import java.io.Serializable;
+
+public class Post implements Serializable {
     private String id;
     private String userId;
     private String description;
