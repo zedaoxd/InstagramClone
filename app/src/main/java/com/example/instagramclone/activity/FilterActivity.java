@@ -62,8 +62,10 @@ public class FilterActivity extends AppCompatActivity {
     private ThumbnailItem regularFilter;
     private DatabaseReference currentUserRef;
     private DatabaseReference usersRef;
+    private DatabaseReference firebaseRef;
     private User currentUser;
     private AlertDialog dialog;
+    private DataSnapshot followersSnapshot;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,11 +147,11 @@ public class FilterActivity extends AppCompatActivity {
                                 Uri url = task.getResult();
                                 post.setPathPhoto(url.toString());
 
-                                if (post.save()){
+                                int postQuantity = currentUser.getPosts() + 1;
+                                currentUser.setPosts(postQuantity);
+                                currentUser.updatePostQuantity();
 
-                                    int postQuantity = currentUser.getPosts() + 1;
-                                    currentUser.setPosts(postQuantity);
-                                    currentUser.updatePostQuantity();
+                                if (post.save(followersSnapshot)){
 
                                     Toast.makeText(FilterActivity.this,
                                             "Sucesso ao salvar postagem",
@@ -165,7 +167,7 @@ public class FilterActivity extends AppCompatActivity {
     }
 
 
-    private void recoverLoggedUserData(){
+    private void retrievePostData(){
 
         openLoading("Carregando...");
         currentUserRef = usersRef.child(idCurrentUser);
@@ -173,8 +175,25 @@ public class FilterActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
+                // recover logged user data
                 currentUser = snapshot.getValue(User.class);
-                dialog.cancel();
+
+                // recover followers
+                DatabaseReference followersRef = firebaseRef
+                        .child(StringUtils.followers)
+                        .child(idCurrentUser);
+                followersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        followersSnapshot = snapshot;
+                        dialog.cancel();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
             }
 
             @Override
@@ -241,9 +260,10 @@ public class FilterActivity extends AppCompatActivity {
 
         thumbnailItemList = new ArrayList<>();
         idCurrentUser = UserFirebase.getUserId();
-        usersRef = FirebaseUtils.getDatabaseReference().child(StringUtils.users);
+        firebaseRef = FirebaseUtils.getDatabaseReference();
+        usersRef = firebaseRef.child(StringUtils.users);
 
-        recoverLoggedUserData();
+        retrievePostData();
     }
 
 

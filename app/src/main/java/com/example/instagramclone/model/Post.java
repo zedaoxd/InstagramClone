@@ -2,9 +2,13 @@ package com.example.instagramclone.model;
 
 import com.example.instagramclone.util.FirebaseUtils;
 import com.example.instagramclone.util.StringUtils;
+import com.example.instagramclone.util.UserFirebase;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Post implements Serializable {
     private String id;
@@ -18,14 +22,33 @@ public class Post implements Serializable {
         this.id = postRef.push().getKey();
     }
 
-    public boolean save(){
-        DatabaseReference reference = FirebaseUtils.getDatabaseReference();
-        DatabaseReference postRef = reference
-                .child(StringUtils.posts)
-                .child(this.userId)
-                .child(this.id);
+    public boolean save(DataSnapshot snapshot){
 
-        postRef.setValue(this);
+        Map object = new HashMap();
+        User currentUser = UserFirebase.getDataCurrentUser();
+        DatabaseReference firebaseRef = FirebaseUtils.getDatabaseReference();
+
+        // reference for post
+        String path = "/" + getUserId() + "/" + getId();
+        object.put("/" + StringUtils.posts +  path, this);
+
+        // reference for feed
+        for (DataSnapshot followers : snapshot.getChildren()){
+
+            String idFollower = followers.getKey();
+
+            HashMap<String, Object> dataFollow = new HashMap<>();
+            dataFollow.put("pathPhoto", getPathPhoto());
+            dataFollow.put("description", getDescription());
+            dataFollow.put("id", getId());
+            dataFollow.put("userName", currentUser.getName());
+            dataFollow.put("pathPhotoProfileUser", currentUser.getPathPhoto());
+
+            String ids = "/" + idFollower + "/" + getId();
+            object.put("/" + StringUtils.feed +  ids, dataFollow);
+        }
+
+        firebaseRef.updateChildren(object);
         return true;
     }
 

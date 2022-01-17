@@ -156,8 +156,8 @@ public class FriendProfileActivity extends AppCompatActivity {
 
     private void verifyUserFollowFriend(){
         DatabaseReference followerRef = followersRef
-                .child(idCurrentUser)
-                .child(selectedUser.getId());
+                .child(selectedUser.getId())
+                .child(idCurrentUser);
 
         followerRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -198,15 +198,15 @@ public class FriendProfileActivity extends AppCompatActivity {
 
     private void saveFollower(User currentUser, User userFriend){
 
-        HashMap<String,Object> dataFriend = new HashMap<>();
-        dataFriend.put("name", userFriend.getName());
-        dataFriend.put("pathPhoto", userFriend.getPathPhoto());
+        HashMap<String,Object> dataCurrentUser = new HashMap<>();
+        dataCurrentUser.put("name", currentUser.getName());
+        dataCurrentUser.put("pathPhoto", currentUser.getPathPhoto());
 
         DatabaseReference followerRef = followersRef
-                .child(currentUser.getId())
-                .child(userFriend.getId());
+                .child(userFriend.getId())
+                .child(currentUser.getId());
 
-        followerRef.setValue(dataFriend);
+        followerRef.setValue(dataCurrentUser);
 
         binding.includeFragment.profileActionButton.setText(R.string.following);
         binding.includeFragment.profileActionButton.setOnClickListener(null);

@@ -20,6 +20,7 @@ public class StringUtils implements Serializable {
     public static final String images = "images";
     public static final String profile = "perfil";
     public static final String posts = "posts";
+    public static final String feed = "feed";
     /* keys intent */
     public static final String friendProfile = "friendProfile";
 }
