@@ -19,6 +19,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.InstagramClone">
         <activity
+            android:name=".activity.CommentsActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.ViewPostActivity"
             android:exported="false" />
         <activity

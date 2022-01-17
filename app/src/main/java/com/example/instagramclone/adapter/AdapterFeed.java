@@ -1,6 +1,7 @@
 package com.example.instagramclone.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.instagramclone.R;
+import com.example.instagramclone.activity.CommentsActivity;
 import com.example.instagramclone.model.Feed;
 import com.example.instagramclone.model.LikesPosts;
 import com.example.instagramclone.model.User;
@@ -75,6 +77,15 @@ public class AdapterFeed extends RecyclerView.Adapter<AdapterFeed.MyViewHolder> 
 
         holder.description.setText(feed.getDescription());
         holder.name.setText(feed.getUserName());
+
+        holder.commentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(context, CommentsActivity.class);
+                i.putExtra(StringUtils.idPost, feed.getId());
+                context.startActivity(i);
+            }
+        });
 
         DatabaseReference likesPostsRef = FirebaseUtils.getDatabaseReference()
                 .child(StringUtils.likesPosts)

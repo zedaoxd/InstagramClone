@@ -23,6 +23,10 @@ public class StringUtils implements Serializable {
     public static final String feed = "feed";
     public static final String likesPosts = "likes_posts";
     public static final String quantityLikes = "quantityLikes";
+    public static final String comments = "comments";
+
+
     /* keys intent */
     public static final String friendProfile = "friendProfile";
+    public static final String idPost = "idPost";
 }

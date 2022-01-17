@@ -39,4 +39,6 @@
     <string name="to_post">Publicar</string>
 
     <string name="description">Descrição</string>
+    <string name="comments">Comentários</string>
+    <string name="enter_comments">Escreva um comentário</string>
 </resources>
