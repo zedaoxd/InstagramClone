@@ -1,6 +1,7 @@
 package com.example.instagramclone.activity;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -61,8 +62,8 @@ public class FilterActivity extends AppCompatActivity {
     private ThumbnailItem regularFilter;
     private DatabaseReference currentUserRef;
     private DatabaseReference usersRef;
-    private boolean isLoading;
     private User currentUser;
+    private AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,78 +109,72 @@ public class FilterActivity extends AppCompatActivity {
 
     private void publishPost(){
 
-        if (isLoading){
+        openLoading("Salvando postagem, aguarde...");
+        String description = binding.textDescriptionFilter.getText().toString();
+        final Post post = new Post();
+        post.setUserId(idCurrentUser);
+        post.setDescription(description);
 
-            Toast.makeText(getApplicationContext(), "carregando dados aguarde", Toast.LENGTH_LONG).show();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        imageFilter.compress(Bitmap.CompressFormat.JPEG, 75, baos);
+        byte[] dataImage = baos.toByteArray();
 
-        } else {
+        StorageReference storageRef = FirebaseUtils.getFirebaseStorage();
+        StorageReference imageRef = storageRef
+                .child(StringUtils.images)
+                .child(StringUtils.posts)
+                .child(post.getId() + ".jpeg");
 
-            String description = binding.textDescriptionFilter.getText().toString();
-            Post post = new Post();
-            post.setUserId(idCurrentUser);
-            post.setDescription(description);
+        UploadTask uploadTask = imageRef.putBytes(dataImage);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(FilterActivity.this,
+                        "Erro ao salvar postagem",
+                        Toast.LENGTH_LONG).show();
 
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            imageFilter.compress(Bitmap.CompressFormat.JPEG, 75, baos);
-            byte[] dataImage = baos.toByteArray();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-            StorageReference storageRef = FirebaseUtils.getFirebaseStorage();
-            StorageReference imageRef = storageRef
-                    .child(StringUtils.images)
-                    .child(StringUtils.posts)
-                    .child(post.getId() + ".jpeg");
+                imageRef.getDownloadUrl().addOnCompleteListener(
+                        new OnCompleteListener<Uri>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Uri> task) {
+                                Uri url = task.getResult();
+                                post.setPathPhoto(url.toString());
 
-            UploadTask uploadTask = imageRef.putBytes(dataImage);
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(FilterActivity.this,
-                            "Erro ao salvar postagem",
-                            Toast.LENGTH_LONG).show();
+                                if (post.save()){
 
-                }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                    int postQuantity = currentUser.getPosts() + 1;
+                                    currentUser.setPosts(postQuantity);
+                                    currentUser.updatePostQuantity();
 
-                    imageRef.getDownloadUrl().addOnCompleteListener(
-                            new OnCompleteListener<Uri>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Uri> task) {
-                                    Uri url = task.getResult();
-                                    post.setPathPhoto(url.toString());
-
-                                    if (post.save()){
-
-                                        int postQuantity = currentUser.getPosts() + 1;
-                                        currentUser.setPosts(postQuantity);
-                                        currentUser.updatePostQuantity();
-
-                                        Toast.makeText(FilterActivity.this,
-                                                "Sucesso ao salvar postagem",
-                                                Toast.LENGTH_LONG).show();
-                                        finish();
-                                    }
+                                    Toast.makeText(FilterActivity.this,
+                                            "Sucesso ao salvar postagem",
+                                            Toast.LENGTH_LONG).show();
+                                    dialog.cancel();
+                                    finish();
                                 }
                             }
-                    );
-                }
-            });
-        }
+                        }
+                );
+            }
+        });
     }
 
 
     private void recoverLoggedUserData(){
 
-        loadingData(true);
-
+        openLoading("Carregando...");
         currentUserRef = usersRef.child(idCurrentUser);
         currentUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 currentUser = snapshot.getValue(User.class);
-                loadingData(false);
+                dialog.cancel();
             }
 
             @Override
@@ -187,6 +182,16 @@ public class FilterActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void openLoading(String title){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle(title);
+        alert.setCancelable(false);
+        alert.setView(R.layout.loading);
+
+        dialog = alert.create();
+        dialog.show();
     }
 
 
@@ -241,15 +246,6 @@ public class FilterActivity extends AppCompatActivity {
         recoverLoggedUserData();
     }
 
-    private void loadingData(boolean state){
-        if (state){
-            isLoading = true;
-            binding.progressBarSavePost.setVisibility(View.VISIBLE);
-        } else {
-            isLoading = false;
-            binding.progressBarSavePost.setVisibility(View.GONE);
-        }
-    }
 
     private void retrieveFilters(){
         ThumbnailsManager.clearThumbs();
