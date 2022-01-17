@@ -52,20 +52,20 @@ public class ViewPostActivity extends AppCompatActivity {
     private void displayPostData(Post post){
         Glide.with(getApplicationContext())
                 .load(Uri.parse(post.getPathPhoto()))
-                .into(binding.imagePostSelectedClicked);
+                .into(binding.includeFeed.imagePostSelectedClicked);
 
-        binding.textDescriptionPost.setText(post.getDescription());
+        binding.includeFeed.textDescriptionPost.setText(post.getDescription());
 
     }
 
     private void displayUserData(User user){
-        binding.textNameProfilePostClicked.setText(user.getName());
+        binding.includeFeed.textNameProfilePostClicked.setText(user.getName());
 
         String pathImage = user.getPathPhoto();
         if (pathImage != null){
             Glide.with(getApplicationContext())
                     .load(Uri.parse(pathImage))
-                    .into(binding.imageProfilePostClicked);
+                    .into(binding.includeFeed.imageProfilePostClicked);
         }
     }
 

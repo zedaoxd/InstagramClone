@@ -61,6 +61,9 @@ dependencies {
     /* Android Universal Image Loader */
     implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
 
+    /* LikeButton */
+    implementation 'com.jackandphantom.android:androidlikebutton:1.2.0'
+
 }
 
 apply plugin: 'com.android.application'
