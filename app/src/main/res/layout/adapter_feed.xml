@@ -84,14 +84,13 @@
             android:id="@+id/likeButton"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_margin="1dp"
-            app:like_icon="@drawable/heart_on"
-            app:unlike_icon="@drawable/heart_off"
             app:circle_endColor="#DF1313"
             app:circle_startColor="#DF1313"
             app:dot_active="true"
             app:dot_color_1="#DF1313"
-            app:dot_color_2="#DF1313" />
+            app:dot_color_2="#DF1313"
+            app:like_icon="@drawable/heart_on"
+            app:unlike_icon="@drawable/heart_off" />
 
         <ImageView
             android:id="@+id/buttonComentarioFeed"

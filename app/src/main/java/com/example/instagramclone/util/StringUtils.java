@@ -21,6 +21,8 @@ public class StringUtils implements Serializable {
     public static final String profile = "perfil";
     public static final String posts = "posts";
     public static final String feed = "feed";
+    public static final String likesPosts = "likes_posts";
+    public static final String quantityLikes = "quantityLikes";
     /* keys intent */
     public static final String friendProfile = "friendProfile";
 }

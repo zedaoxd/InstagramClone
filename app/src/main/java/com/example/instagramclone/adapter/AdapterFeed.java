@@ -2,6 +2,7 @@ package com.example.instagramclone.adapter;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.instagramclone.R;
 import com.example.instagramclone.model.Feed;
+import com.example.instagramclone.model.LikesPosts;
+import com.example.instagramclone.model.User;
+import com.example.instagramclone.util.FirebaseUtils;
+import com.example.instagramclone.util.StringUtils;
+import com.example.instagramclone.util.UserFirebase;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.jackandphantom.androidlikebutton.AndroidLikeButton;
 
 import java.util.List;
@@ -41,6 +51,7 @@ public class AdapterFeed extends RecyclerView.Adapter<AdapterFeed.MyViewHolder> 
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
         Feed feed = feedList.get(position);
+        User currentUser = UserFirebase.getDataCurrentUser();
         String urlUserPhotoString = feed.getPathPhotoProfileUser();
 
         if (urlUserPhotoString != null) {
@@ -62,10 +73,51 @@ public class AdapterFeed extends RecyclerView.Adapter<AdapterFeed.MyViewHolder> 
             holder.postPhoto.setImageResource(R.drawable.avatar);
         }
 
-
-
         holder.description.setText(feed.getDescription());
         holder.name.setText(feed.getUserName());
+
+        DatabaseReference likesPostsRef = FirebaseUtils.getDatabaseReference()
+                .child(StringUtils.likesPosts)
+                .child(feed.getId());
+        likesPostsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int quantityLikes = 0;
+                if (snapshot.hasChild("quantityLikes")){
+                    LikesPosts likesPosts = snapshot.getValue(LikesPosts.class);
+                    quantityLikes = likesPosts.getQuantityLikes();
+                }
+
+                // checks if the current user has already liked
+                holder.likeButton.setCurrentlyLiked(snapshot.hasChild(currentUser.getId()));
+
+                LikesPosts like = new LikesPosts();
+                like.setFeed(feed);
+                like.setUser(currentUser);
+                like.setQuantityLikes(quantityLikes);
+
+                holder.likeButton.setOnLikeEventListener(new AndroidLikeButton.OnLikeEventListener() {
+                    @Override
+                    public void onLikeClicked(AndroidLikeButton androidLikeButton) {
+                        like.save();
+                        holder.likesQuantity.setText(like.getQuantityLikes() + " curtidas");
+                    }
+
+                    @Override
+                    public void onUnlikeClicked(AndroidLikeButton androidLikeButton) {
+                        like.removeLike();
+                        holder.likesQuantity.setText(like.getQuantityLikes() + " curtidas");
+                    }
+                });
+
+                holder.likesQuantity.setText(like.getQuantityLikes() + " curtidas");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     @Override
