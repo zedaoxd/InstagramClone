@@ -69,6 +69,7 @@ public class Comment {
         this.userName = userName;
     }
 
+
     public String getComment() {
         return comment;
     }

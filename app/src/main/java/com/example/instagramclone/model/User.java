@@ -3,6 +3,7 @@ package com.example.instagramclone.model;
 import androidx.annotation.NonNull;
 
 import com.example.instagramclone.util.FirebaseUtils;
+import com.example.instagramclone.util.StringUtils;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 
@@ -31,9 +32,13 @@ public class User implements Serializable {
 
     public void update(){
         DatabaseReference databaseReference = FirebaseUtils.getDatabaseReference();
-        DatabaseReference userRef = databaseReference.child("users").child(this.id);
 
-        userRef.updateChildren(convertToMap());
+        Map obj = new HashMap();
+        String path = "/" + StringUtils.users + "/" + getId();
+        obj.put( path + "/name", getName());
+        obj.put( path + "/pathPhoto", getPathPhoto());
+
+        databaseReference.updateChildren(obj);
     }
 
     public void updatePostQuantity(){
